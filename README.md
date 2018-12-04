@@ -15,3 +15,9 @@ optional arguments:
 ```
 ## How to make it stop
 Press `Escape`.
+
+## Dependencies
+
+- python3
+- pillow
+- requests
