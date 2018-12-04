@@ -1,5 +1,4 @@
-#inspishit
-
+# inspishit
 Show full screen images of random gibberish disguised as inspirational quotes.
 
 ## Running
