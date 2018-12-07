@@ -1,10 +1,10 @@
 import re
-from threading import Thread
+import argparse
 import tkinter
 import requests
 from io import BytesIO
 from PIL import Image, ImageTk
-import argparse
+from threading import Thread
 
 
 class App(tkinter.Tk):
@@ -55,19 +55,36 @@ class App(tkinter.Tk):
         self.canvas.itemconfig(img_area, image=self.img)
         self.after(self.delay, self.load_new_image)
 
+    def refresh_failed(self):
+        self.show_text('Error Loading Image... Retrying...')
+        self.after(3000, self.load_new_image)
+
     def load_new_image(self):
         print('Starting image refresh...')
-        thread = Thread(target=self.get_img, args=(self.update_img, self.url))
+        thread = Thread(target=self.get_img, args=(self.url, self.update_img, self.refresh_failed))
         thread.start()
 
     @staticmethod
-    def get_img(callback, url):
-        response = requests.get(url)
+    def get_img(url, success, failure):
+        try:
+            response = requests.get(url)
+        except requests.exceptions.RequestException as e:
+            print(e)
+            failure()
+            return
+
         print(f'Got image url {response.content}')
         img_url = response.content
-        img_response = requests.get(img_url)
+
+        try:
+            img_response = requests.get(img_url)
+        except requests.exceptions.RequestException as e:
+            print(e)
+            failure()
+            return
+
         print('Got image data')
-        callback(Image.open(BytesIO(img_response.content)))
+        success(Image.open(BytesIO(img_response.content)))
         print('Image refresh successful\n')
 
 
