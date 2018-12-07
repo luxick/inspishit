@@ -116,7 +116,9 @@ if __name__ == '__main__':
     if args.xmas:
         api_url = f'{api_url}&season=xmas'
 
-    w, h = args.window_size.split('x')
+    w, h = None, None
+    if args.window_size:
+        w, h = [int(x) for x in args.window_size.split('x')]
 
-    app = App(args.interval * 1000, api_url, int(w), int(h))
+    app = App(args.interval * 1000, api_url, w, h)
     app.run()
