@@ -25,12 +25,11 @@ class App(tkinter.Tk):
         self.geometry('{}x{}+0+0'.format(self.w, self.h))
         self.delay = delay
         self.url = url
+        self.img = None
         self.canvas = tkinter.Canvas(self, width=self.w, height=self.h)
-        img = self.resize_to_fit(Image.open('dummy.png'))
-        self.img = ImageTk.PhotoImage(img)
-        self.img_area = self.canvas.create_image(self.w / 2, self.h / 2, image=self.img)
         self.canvas.pack()
         self.canvas.configure(background='black')
+        self.show_text('Now Loading...')
         self.load_new_image()
 
     def run(self):
@@ -44,9 +43,16 @@ class App(tkinter.Tk):
         img_height = int(img_height * ratio)
         return pil_image.resize((img_width, img_height), Image.ANTIALIAS)
 
+    def show_text(self, msg):
+        self.canvas.delete('all')
+        self.canvas.create_text(self.w / 2, self.h / 2,
+                                text=msg, fill='#fff', font='80')
+
     def update_img(self, pil_image):
         self.img = ImageTk.PhotoImage(self.resize_to_fit(pil_image))
-        self.canvas.itemconfig(self.img_area, image=self.img)
+        self.canvas.delete('all')
+        img_area = self.canvas.create_image(self.w / 2, self.h / 2)
+        self.canvas.itemconfig(img_area, image=self.img)
         self.after(self.delay, self.load_new_image)
 
     def load_new_image(self):
